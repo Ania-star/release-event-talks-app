@@ -19,6 +19,8 @@ const searchInput = document.getElementById('search-input');
 const categoryPills = document.getElementById('category-pills');
 const toast = document.getElementById('toast');
 const toastMessage = document.getElementById('toast-message');
+const themeToggle = document.getElementById('theme-toggle');
+const themeIcon = document.getElementById('theme-icon');
 
 // Composer DOM Elements
 const selectedMeta = document.getElementById('selected-meta');
@@ -36,6 +38,7 @@ const mockTweetDate = document.getElementById('mock-tweet-date');
 
 // Initialization
 document.addEventListener('DOMContentLoaded', () => {
+    initTheme();
     fetchReleases();
     setupEventListeners();
     updateMockDate();
@@ -47,6 +50,11 @@ function setupEventListeners() {
     refreshBtn.addEventListener('click', () => {
         fetchReleases(true);
     });
+
+    // Theme toggle button
+    if (themeToggle) {
+        themeToggle.addEventListener('click', toggleTheme);
+    }
 
     // Export CSV button
     if (exportCsvBtn) {
@@ -426,4 +434,48 @@ function exportToCSV() {
     document.body.removeChild(link);
     
     showToast('CSV export downloaded!', 'success');
+}
+
+// Initialize theme from localStorage preference or system settings (default: dark)
+function initTheme() {
+    const savedTheme = localStorage.getItem('theme');
+    // Default to dark mode if no preference saved
+    if (savedTheme === 'light') {
+        document.body.classList.add('light-theme');
+        if (themeIcon) {
+            themeIcon.className = 'fa-solid fa-moon'; // Moon icon represents changing to dark theme
+        }
+        if (themeToggle) {
+            themeToggle.title = 'Switch to Dark Mode';
+        }
+    } else {
+        document.body.classList.remove('light-theme');
+        if (themeIcon) {
+            themeIcon.className = 'fa-solid fa-sun'; // Sun icon represents changing to light theme
+        }
+        if (themeToggle) {
+            themeToggle.title = 'Switch to Light Mode';
+        }
+    }
+}
+
+// Toggle light-theme and save selection to localStorage
+function toggleTheme() {
+    const isLight = document.body.classList.toggle('light-theme');
+    
+    if (isLight) {
+        localStorage.setItem('theme', 'light');
+        if (themeIcon) {
+            themeIcon.className = 'fa-solid fa-moon';
+        }
+        themeToggle.title = 'Switch to Dark Mode';
+        showToast('Switched to Light Mode', 'success');
+    } else {
+        localStorage.setItem('theme', 'dark');
+        if (themeIcon) {
+            themeIcon.className = 'fa-solid fa-sun';
+        }
+        themeToggle.title = 'Switch to Light Mode';
+        showToast('Switched to Dark Mode', 'success');
+    }
 }

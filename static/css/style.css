@@ -31,6 +31,71 @@
     --font-code: 'Fira Code', monospace;
 }
 
+/* Light Theme Variables Overrides */
+body.light-theme {
+    --bg-primary: #F8FAFC;          /* Slate 50 */
+    --bg-secondary: #FFFFFF;        /* Pure White */
+    --bg-tertiary: #E2E8F0;         /* Slate 200 */
+    --bg-card: #FFFFFF;             /* Pure White */
+    --border-color: #E2E8F0;        /* Slate 200 */
+    --border-hover: #CBD5E1;        /* Slate 300 */
+    
+    --text-primary: #0F172A;        /* Slate 900 */
+    --text-secondary: #475569;      /* Slate 600 */
+    --text-muted: #64748B;          /* Slate 500 */
+    
+    --primary-color: #0284C7;       /* Sky 700 */
+    --primary-glow: rgba(2, 132, 199, 0.08);
+}
+
+/* Light Theme Specific Component Adjustments */
+body.light-theme .note-card,
+body.light-theme .tweet-card-composer {
+    box-shadow: 0 4px 6px -1px rgba(15, 23, 42, 0.04), 0 2px 4px -2px rgba(15, 23, 42, 0.04), 0 0 0 1px rgba(15, 23, 42, 0.01);
+}
+
+body.light-theme .note-card:hover {
+    box-shadow: 0 10px 15px -3px rgba(15, 23, 42, 0.08), 0 4px 6px -4px rgba(15, 23, 42, 0.08);
+}
+
+body.light-theme .note-card.selected {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px var(--primary-glow), 0 10px 15px -3px rgba(2, 132, 199, 0.15);
+}
+
+body.light-theme .pill {
+    background-color: rgba(15, 23, 42, 0.03);
+}
+
+body.light-theme .pill:hover {
+    background-color: rgba(15, 23, 42, 0.06);
+}
+
+body.light-theme .pill.active {
+    background-color: var(--primary-color);
+    color: #FFFFFF;
+}
+
+body.light-theme .btn-secondary {
+    background-color: #FFFFFF;
+}
+
+body.light-theme .btn-secondary:hover {
+    background-color: #F1F5F9;
+}
+
+body.light-theme .last-sync-badge {
+    background-color: #FFFFFF;
+}
+
+body.light-theme #tweet-textarea {
+    background-color: #F8FAFC;
+}
+
+body.light-theme .selected-meta {
+    background-color: #F8FAFC;
+}
+
 /* Reset and Base Styles */
 * {
     box-sizing: border-box;
@@ -259,6 +324,14 @@ body {
 .btn-secondary:hover {
     background-color: var(--border-hover);
     border-color: var(--text-muted);
+}
+
+.btn-icon-only {
+    padding: 0.65rem;
+    aspect-ratio: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .btn-tweet {
