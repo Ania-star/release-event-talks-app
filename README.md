@@ -1,15 +1,19 @@
 # BigQuery Release Notes Dashboard & Tweet Composer
 
-A modern, developer-centric dashboard that fetches, parses, and formats Google Cloud's BigQuery release notes. It features a responsive grid layout, real-time keyword search, category filtering, and an interactive **Tweet Composer and Live Preview** panel to draft and share updates directly to Twitter/X.
+A modern, developer-centric dashboard that fetches, parses, and formats Google Cloud's BigQuery release notes. It features a responsive layout, independent column scrolling, real-time keyword search, category filtering, a light/dark theme toggle, and an interactive **Tweet Composer and Live Preview** panel to draft and share updates directly to Twitter/X.
 
 ## 🚀 Key Features
 
 *   **Smart Entry Chunking**: Parses and splits date-aggregated feed entries into individual, category-labeled updates (`Feature`, `Announcement`, `Issue`, `Fix`, `Deprecated`, `Update`).
 *   **Tweet Composer & Live Mockup**: Replicates a pixel-perfect Twitter/X card preview. Includes pre-formatted drafts with tags, dates, descriptions, and direct reference links.
 *   **Search & Dynamic Filters**: Instantly query titles, descriptions, and categories with live DOM filtering.
+*   **Light & Dark Themes**: Sleek light/dark color palette toggle with user preference persisted in `localStorage`.
+*   **Export to CSV**: Easily download the currently filtered view of release notes into a structured CSV file (`Date, Category, Links, Content`).
+*   **Card-Level Clipboard Copies**: Quick-copy individual updates to your clipboard directly from the note cards without interrupting your active tweet draft.
+*   **Robust Connection Recovery**: Displays clear connection error panels inside the feed if Google Cloud's RSS is offline or blocked, featuring an inline **"Retry Connection"** action.
+*   **External Link Indicators**: All links inside cards automatically append a small indicator icon (`fa-up-right-from-square`) using CSS pseudo-elements to signal new tab navigation.
 *   **Optimized Performance**: Built-in backend in-memory cache (5-minute TTL) with a manual override refresh (featuring visual spin animations).
 *   **Zero-OAuth Web Intent**: Seamlessly triggers Twitter's Web Intent to post tweets without needing complex API keys or scopes.
-*   **Vanilla Frontend**: Lightweight, responsive user interface utilizing custom CSS variables, slate-dark themes, and micro-animations.
 
 ---
 
@@ -29,9 +33,9 @@ bq-releases-notes/
 │   └── index.html      # Main dashboard page layout
 ├── static/
 │   ├── css/
-│   │   └── style.css   # Dark space theme, custom styling & transitions
+│   │   └── style.css   # Theme variables (dark/light), layout spacing & overrides
 │   └── js/
-│       └── main.js     # State controller, filters, live preview & actions
+│       └── main.js     # State controller, filters, theme handlers & export routines
 ├── app.py              # Flask server, feed fetcher, XML parser, and REST API
 ├── requirements.txt    # Python package dependencies
 └── README.md           # Documentation
@@ -85,7 +89,10 @@ Open your browser and navigate to:
 Fetches the parsed list of release note updates.
 *   **Query Parameters**:
     *   `refresh` (bool, optional): If `true`, bypasses the cache and forces a fresh scrape from Google Cloud. Default is `false`.
-*   **Response Format**:
+*   **Response Statuses**:
+    *   `200 OK`: Successful fetch. Returns cached or fresh releases.
+    *   `503 Service Unavailable`: Connection error. Returned when the cache is empty and the Google Cloud RSS feed cannot be scraped.
+*   **Response Format (200 OK)**:
     ```json
     {
       "status": "success",
