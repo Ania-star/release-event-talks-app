@@ -116,6 +116,14 @@ def index():
 def api_releases():
     force_refresh = request.args.get('refresh', 'false').lower() == 'true'
     releases = get_releases(force_refresh=force_refresh)
+    
+    # If the cache is empty and the fetch failed
+    if not releases and last_fetch_time == 0:
+        return jsonify({
+            'status': 'error',
+            'message': 'Unable to retrieve release notes. Google Cloud feeds may be offline or unreachable.'
+        }), 503
+        
     return jsonify({
         'status': 'success',
         'count': len(releases),

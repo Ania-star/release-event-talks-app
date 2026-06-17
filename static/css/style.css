@@ -659,6 +659,20 @@ body {
     text-decoration: underline;
 }
 
+.card-content a::after {
+    content: " \f08e"; /* FontAwesome external link icon */
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    font-size: 0.75rem;
+    margin-left: 0.25rem;
+    display: inline-block;
+    text-decoration: none !important;
+}
+
+.card-content a:hover::after {
+    text-decoration: none !important;
+}
+
 .card-content code {
     background-color: rgba(255, 255, 255, 0.05);
     padding: 0.15rem 0.4rem;

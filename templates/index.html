@@ -107,6 +107,16 @@
                             <h3>No updates found</h3>
                             <p>Try adjusting your search filters or sync notes again.</p>
                         </div>
+                        <!-- Error State -->
+                        <div class="empty-state hidden" id="error-state">
+                            <i class="fa-solid fa-triangle-exclamation" style="color: var(--color-deprecated)"></i>
+                            <h3>Connection Error</h3>
+                            <p id="error-message">Google Cloud release notes feed is currently unreachable.</p>
+                            <button id="retry-btn" class="btn btn-secondary" style="margin-top: 0.5rem;">
+                                <i class="fa-solid fa-arrows-rotate"></i>
+                                <span>Retry Connection</span>
+                            </button>
+                        </div>
                         <!-- Cards will be injected here dynamically -->
                     </div>
                 </section>

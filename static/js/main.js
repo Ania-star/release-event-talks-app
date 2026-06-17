@@ -21,6 +21,9 @@ const toast = document.getElementById('toast');
 const toastMessage = document.getElementById('toast-message');
 const themeToggle = document.getElementById('theme-toggle');
 const themeIcon = document.getElementById('theme-icon');
+const errorState = document.getElementById('error-state');
+const errorMessage = document.getElementById('error-message');
+const retryBtn = document.getElementById('retry-btn');
 
 // Composer DOM Elements
 const selectedMeta = document.getElementById('selected-meta');
@@ -50,6 +53,13 @@ function setupEventListeners() {
     refreshBtn.addEventListener('click', () => {
         fetchReleases(true);
     });
+
+    // Retry button inside connection error panel
+    if (retryBtn) {
+        retryBtn.addEventListener('click', () => {
+            fetchReleases(true);
+        });
+    }
 
     // Theme toggle button
     if (themeToggle) {
@@ -96,6 +106,7 @@ async function fetchReleases(forceRefresh = false) {
         toggleLoading(true);
         refreshBtn.disabled = true;
         refreshIcon.classList.add('spin-animation');
+        if (errorState) errorState.classList.add('hidden'); // Hide previous error state
 
         const url = `/api/releases${forceRefresh ? '?refresh=true' : ''}`;
         const response = await fetch(url);
@@ -116,15 +127,25 @@ async function fetchReleases(forceRefresh = false) {
                 selectRelease(data.releases[0].id);
             }
         } else {
-            showToast('Failed to sync release notes', 'error');
+            showToast(data.message || 'Failed to sync release notes', 'error');
             toggleLoading(false);
-            emptyState.classList.remove('hidden');
+            if (errorState) {
+                errorMessage.textContent = data.message || 'Failed to sync details from Google Cloud feed.';
+                errorState.classList.remove('hidden');
+            } else {
+                emptyState.classList.remove('hidden');
+            }
         }
     } catch (error) {
         console.error('Error fetching release notes:', error);
         showToast('Network error while syncing details', 'error');
         toggleLoading(false);
-        emptyState.classList.remove('hidden');
+        if (errorState) {
+            errorMessage.textContent = 'Google Cloud release notes feed is currently unreachable. Please check your network connection.';
+            errorState.classList.remove('hidden');
+        } else {
+            emptyState.classList.remove('hidden');
+        }
     } finally {
         refreshIcon.classList.remove('spin-animation');
         refreshBtn.disabled = false;
