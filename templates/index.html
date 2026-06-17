@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BigQuery Release Notes Dashboard</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="logo-icon">
+                    <i class="fa-solid fa-database animate-pulse"></i>
+                </div>
+                <h2>BigQuery<span>HQ</span></h2>
+            </div>
+            <nav class="nav-menu">
+                <a href="#" class="nav-item active">
+                    <i class="fa-solid fa-list-check"></i>
+                    <span>Release Notes</span>
+                </a>
+                <a href="https://cloud.google.com/bigquery/docs/release-notes" target="_blank" class="nav-item">
+                    <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                    <span>Official Docs</span>
+                </a>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="status-indicator">
+                    <span class="dot pulse-green"></span>
+                    <span id="sync-status-text">Connected</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Dashboard Area -->
+        <main class="main-content">
+            <!-- Top Header -->
+            <header class="top-header">
+                <div class="header-title">
+                    <h1>BigQuery Release Notes</h1>
+                    <p class="subtitle">Stay updated with the latest Google BigQuery features, deprecations, and fixes.</p>
+                </div>
+                <div class="header-actions">
+                    <div class="last-sync-badge">
+                        <i class="fa-solid fa-clock-rotate-left"></i>
+                        <span>Last sync: </span><span id="last-sync-time">Never</span>
+                    </div>
+                    <button id="refresh-btn" class="btn btn-primary" title="Sync latest notes">
+                        <i class="fa-solid fa-arrows-rotate" id="refresh-icon"></i>
+                        <span>Sync Notes</span>
+                    </button>
+                </div>
+            </header>
+
+            <!-- Filters Section -->
+            <section class="filters-section">
+                <div class="search-box">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" id="search-input" placeholder="Search updates, keywords, or types (e.g. Gemini, SQL)...">
+                </div>
+                <div class="filter-pills-container">
+                    <span class="filter-label">Categories:</span>
+                    <div class="pills-scroll" id="category-pills">
+                        <button class="pill active" data-category="all">All Updates</button>
+                        <button class="pill" data-category="feature">Features</button>
+                        <button class="pill" data-category="announcement">Announcements</button>
+                        <button class="pill" data-category="issue">Issues</button>
+                        <button class="pill" data-category="fix">Fixes</button>
+                        <button class="pill" data-category="deprecated">Deprecations</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Grid Layout -->
+            <div class="dashboard-grid">
+                <!-- Release Notes Column -->
+                <section class="notes-column">
+                    <div class="column-header">
+                        <h2>Latest Updates (<span id="visible-count">0</span>)</h2>
+                        <span class="hint-text">Select any note card to write a tweet.</span>
+                    </div>
+                    <div id="notes-list" class="notes-list">
+                        <!-- Loading State -->
+                        <div class="loading-state" id="loading-state">
+                            <div class="spinner-large"></div>
+                            <p>Fetching latest updates from Google Cloud...</p>
+                        </div>
+                        <!-- Empty State -->
+                        <div class="empty-state hidden" id="empty-state">
+                            <i class="fa-solid fa-folder-open"></i>
+                            <h3>No updates found</h3>
+                            <p>Try adjusting your search filters or sync notes again.</p>
+                        </div>
+                        <!-- Cards will be injected here dynamically -->
+                    </div>
+                </section>
+
+                <!-- Tweet Composer Column -->
+                <section class="tweet-column">
+                    <div class="sticky-container">
+                        <div class="column-header">
+                            <h2>Share to Twitter/X</h2>
+                        </div>
+                        
+                        <div class="tweet-card-composer">
+                            <!-- Composer Form -->
+                            <div class="composer-body">
+                                <div class="selected-meta" id="selected-meta">
+                                    <div class="meta-label">Selected Note:</div>
+                                    <div class="meta-value">
+                                        <span class="badge" id="composer-badge">Feature</span>
+                                        <span id="composer-date">June 15, 2026</span>
+                                    </div>
+                                </div>
+                                <div class="textarea-wrapper">
+                                    <textarea id="tweet-textarea" placeholder="Select a release note or start typing a tweet..." maxlength="500"></textarea>
+                                </div>
+                                <div class="composer-footer">
+                                    <div class="char-count-container">
+                                        <span id="char-count">0</span>/280
+                                        <div class="char-progress-bg">
+                                            <div id="char-progress" class="char-progress-bar" style="width: 0%"></div>
+                                        </div>
+                                    </div>
+                                    <div class="composer-actions">
+                                        <button id="copy-btn" class="btn btn-secondary" title="Copy text to clipboard">
+                                            <i class="fa-regular fa-copy"></i>
+                                            <span>Copy</span>
+                                        </button>
+                                        <a id="tweet-btn" href="#" target="_blank" class="btn btn-tweet">
+                                            <i class="fa-brands fa-x-twitter"></i>
+                                            <span>Tweet</span>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Live Mock Preview -->
+                            <div class="preview-header">Live Preview</div>
+                            <div class="mock-tweet">
+                                <div class="tweet-user">
+                                    <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=150&h=150&q=80" alt="Avatar" class="tweet-avatar">
+                                    <div class="user-details">
+                                        <div class="user-name">
+                                            <span>BigQuery Releases</span>
+                                            <i class="fa-solid fa-circle-check verified-icon"></i>
+                                        </div>
+                                        <div class="user-handle">@BigQueryRelease</div>
+                                    </div>
+                                    <div class="tweet-logo">
+                                        <i class="fa-brands fa-x-twitter"></i>
+                                    </div>
+                                </div>
+                                <div class="tweet-content" id="mock-tweet-text">
+                                    Select a release note to generate a draft tweet here. You can customize the draft directly in the composer.
+                                </div>
+                                <div class="tweet-meta-info" id="mock-tweet-date">
+                                    10:14 AM · Jun 17, 2026
+                                </div>
+                                <div class="tweet-divider"></div>
+                                <div class="tweet-stats">
+                                    <span><strong>0</strong> Reposts</span>
+                                    <span><strong>1</strong> Quote</span>
+                                    <span><strong>12</strong> Likes</span>
+                                </div>
+                                <div class="tweet-divider"></div>
+                                <div class="tweet-actions-mock">
+                                    <i class="fa-regular fa-comment"></i>
+                                    <i class="fa-solid fa-retweet"></i>
+                                    <i class="fa-regular fa-heart"></i>
+                                    <i class="fa-regular fa-bookmark"></i>
+                                    <i class="fa-solid fa-share-nodes"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="toast" class="toast hidden">
+        <i class="fa-solid fa-circle-check"></i>
+        <span id="toast-message">Copied to clipboard!</span>
+    </div>
+
+    <!-- Script Injection -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>
